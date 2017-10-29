@@ -50,7 +50,7 @@ router.get('/:id', (req, res, next) => {
 
     let album = db.get('albums').getById(item.value().albumId).value();
 
-    let o = Object.assign({ url: `${config.siteUrl}/uploads/${item.albumId}/${item.id}.${item.ext}` }, item.value(), { album: Object.assign({}, album) });
+    let o = Object.assign({ url: `${config.siteUrl}/uploads/${item.value().albumId}/${item.value().id}.${item.value().ext}` }, item.value(), { album: Object.assign({}, album) });
     return res.status(200).json(o);
 });
 
