@@ -48,3 +48,4 @@ dist
 _references.js
 
 server/node_modules
+server/uploads

@@ -4,6 +4,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { observable, extendObservable, action } from 'mobx';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 
 import Album from '../data/album';
 
@@ -20,7 +21,12 @@ export default class AlbumCard
     constructor() {
         super();
 
+        extendObservable(this, {
+            isExpanded: false,
 
+            isNameInputFocused: false,
+            nameInputValue: null
+        });
     }
 
     render() {
@@ -29,19 +35,41 @@ export default class AlbumCard
         let { model } = props;
 
         return (
-            <div className="album-card">
+            <div className="album-card" aria-expanded={this.isExpanded}>
 
-                <header className="album-header">
+                <header className="album-header" onClick={this.handleHeaderClick}>
 
                     <div className="album-cover">
 
                     </div>
 
                     <div className="album-info">
-                        <h2 className="album-name">{model.name}</h2>
-                        <h4 className="album-photo-count">{model.photos.length} photos</h4>
+                        <h2 className="album-name">
+
+                            <input className="album-name-input"
+                                type="text"
+                                placeholder="Enter album name"
+                                value={this.isNameInputFocused ? this.nameInputValue : model.name}
+                                onChange={this.handleNameInputChange}
+                                onFocus={this.handleNameInputFocus}
+                                onBlur={this.handleNameInputBlur} />
+                        </h2>
+
+                        <h4 className="album-details">
+                            <span className="album-photo-count">{model.photos.length} photos</span>
+                            <span className="separator"> / </span>
+                            <span className="album-created-date">Created {model.createdDate.fromNow()}</span>
+                            <span className="separator"> / </span>
+                            <span className="album-modified-date">Modified {model.modifiedDate.fromNow()}</span>
+                        </h4>
                     </div>
 
+                    <div className="album-actions">
+
+                        <button className="delete-album-button album-action-button" onClick={this.handleDeleteButtonClick}>
+                            <span className="icon fa fa-trash" />
+                        </button>
+                    </div>
                 </header>
 
                 <ul className="photo-browser">
@@ -55,10 +83,60 @@ export default class AlbumCard
                     })}
 
                     <li className="photo-item photo-upload-item" key="$uploadItem">
-                        upload
+
+                        <div className="photo-upload-button" role="button">
+                            <input type="file" multiple={true} onChange={this.handleUploadInputChange} />
+                        </div>
                     </li>
                 </ul>
             </div>
         );
+    }
+
+    @action
+    handleUploadInputChange = (evt) => {
+
+        const { props } = this;
+        let { model } = props;
+
+        _.forEach(evt.target.files, fileContent => {
+
+            // fileContent instanceof File
+            // see https://developer.mozilla.org/en-US/docs/Web/API/File
+
+            model.uploadPhoto({
+                fileContent
+            });
+        });
+    }
+
+    @action
+    handleHeaderClick = () => {
+        this.isExpanded = !this.isExpanded;
+        if (this.isExpanded)
+            this.props.model.fetch();
+    }
+
+    handleDeleteButtonClick = () =>
+        this.props.model.delete();
+
+    @action
+    handleNameInputChange = evt =>
+        this.nameInputValue = evt.target.value;
+
+    @action
+    handleNameInputFocus = () => {
+        this.isNameInputFocused = true;
+        this.nameInputValue = this.props.model.name || '';
+    }
+
+    @action
+    handleNameInputBlur = () => {
+        this.props.model.update({
+            name: this.nameInputValue
+        });
+
+        this.isNameInputFocused = false;
+        this.nameInputValue = null;
     }
 }

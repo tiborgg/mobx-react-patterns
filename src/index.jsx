@@ -23,6 +23,8 @@ class App extends React.Component {
         extendObservable(this, {
             albumsStore: new AlbumsStore(this.apiConnector)
         });
+
+        this.albumsStore.fetchAlbums();
     }
 
     render() {

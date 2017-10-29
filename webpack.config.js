@@ -12,7 +12,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'app.js',
-        publicPath: '/js/'
+        publicPath: '/js/',
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin()
@@ -47,5 +47,8 @@ module.exports = {
                     { loader: 'style-loader' },
                     { loader: "css-loader", options: { sourceMap: true } }]
             }]
+    },
+    devServer: {
+        contentBase: './public'
     }
 };

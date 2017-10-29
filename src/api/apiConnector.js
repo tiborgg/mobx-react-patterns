@@ -11,7 +11,7 @@ export default class ApiConnector {
     _request(method, endpoint, callback, data) {
 
         let xhr = new XMLHttpRequest();
-        let url = 'http://localhost:8000/api' + endpoint;
+        let url = 'http://localhost:3000/api' + endpoint;
 
         // format body
         let body;
@@ -67,11 +67,11 @@ export default class ApiConnector {
     _get = (url, callback) => this._request('GET', url, callback);
     _post = (url, callback, data) => this._request('POST', url, callback, data);
     _put = (url, callback, data) => this._request('PUT', url, callback, data);
-    _delete = (url, callback) => this._request('DELETE', url, callback, data);
+    _delete = (url, callback) => this._request('DELETE', url, callback);
 
     fetchAlbums(albumsStore) {
 
-        return this._get('/albums', (err, data) => {
+        return this._get('/album', (err, data) => {
 
             if (err) return;
             albumsStore.injectApiAlbums(data);
@@ -82,71 +82,102 @@ export default class ApiConnector {
     fetchAlbum(album) {
 
         album.syncState = 'fetching';
-        return this._get(`/albums/${album.id}`, (err, data) => {
+        return this._get(`/album/${album.id}`, (err, data) => {
 
             if (err) return;
-            album.applyApiData(data);
+            
+            album.applyApiProps(data);
+            album.injectApiPhotos(data.pictures);
         });
+    }
+
+    @action
+    createAlbum(album) {
+
+        let data = {
+            name: album.name
+        };
+
+        album.syncState = 'creating';
+        return this._post(`/album`, (err, data) => {
+
+            if (err) return;
+            album.applyApiProps(data);
+        }, data);
     }
 
     @action
     updateAlbum(album) {
 
+        let data = {
+            name: album.name
+        };
+
         album.syncState = 'updating';
-        return this._put(`/albums/${album.id}`, (err, data) => {
+        return this._put(`/album/${album.id}`, (err, data) => {
 
             if (err) return;
-            album.applyApiData(data);
-        });
+            album.applyApiProps(data);
+        }, data);
     }
 
     deleteAlbum(album) {
 
         album.syncState = 'deleting';
-        return this._delete(`/albums/${album.id}`, (err, data) => {
+        return this._delete(`/album/${album.id}`, (err, data) => {
 
             if (err) return;
-            album.handleDeleteSuccess();
+            album.handleDeleted();
         });
     }
 
+
     fetchPhoto(photo) {
 
-        album.syncState = 'fetching';
-        return this._get(`/photos/${photo.id}`, (err, data) => {
+        
+        photo.syncState = 'fetching';
+        return this._get(`/picture/${photo.id}`, (err, data) => {
 
             if (err) return;
-            photo.applyApiData(data);
+            photo.applyApiProps(data);
         });
     }
 
     updatePhoto(photo) {
 
-        album.syncState = 'updating';
-        return this._put(`/photos/${photo.id}`, (err, data) => {
+        let data = {
+            name: photo.name
+        };
+
+        photo.syncState = 'updating';
+        return this._put(`/picture/${photo.id}`, (err, data) => {
 
             if (err) return;
-            photo.applyApiData(data);
-        }, photo.exportApiData());
+            photo.applyApiProps(data);
+        }, data);
     }
 
     deletePhoto(photo) {
 
+        photo.syncState = 'deleting';
+        return this._delete(`/picture/${photo.id}`, (err, data) => {
+
+            if (err) return;
+            photo.handleDeleted();
+        });
     }
 
     uploadPhoto(photo) {
 
         let xhr = new XMLHttpRequest();
+        let url = `http://localhost:3000/api/album/${photo.parentAlbum.id}/picture`;
 
         let formData = new FormData();
 
         formData.append('name', photo.name);
-        formData.append('description', photo.description);
-        formData.append('fileData', photo.content);
+        formData.append('pic', photo.fileContent);
 
-        xhr.open('POST', uploadUrl, true);
-
-        xhr.setRequestHeader('Accept', '*.*');
+        xhr.open('POST', url, true);
 
         xhr.onload = evt => {
 
@@ -187,6 +218,8 @@ export default class ApiConnector {
 
         });
 
+
+        photo.syncState = 'uploading';
         xhr.send(formData);
 
         return {

@@ -2,33 +2,34 @@
 
 import { observable, extendObservable, action } from 'mobx';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
+import moment from 'moment';
 
 import Photo from './photo';
 
 export default class Album {
 
-    constructor(props, apiConnector) {
-
-        this.apiConnector = apiConnector;
+    constructor(props) {
 
         extendObservable(this, {
 
             id: props.id,
-            name: props.name,
-
+            previousId: null,
             parentStore: props.parentStore,
-
             syncState: 'new',
 
+            name: props.name,
             createdDate: props.createdDate,
             modifiedDate: props.modifiedDate,
 
-            _photos: observable.map(props._photos),
+            _photos: observable.map(),
             get photos() {
 
                 return this._photos.values();
             }
         });
+
+        this.apiConnector = this.parentStore.apiConnector;
     }
 
     createLocalPhotoFromFileContent(fileContent) {
@@ -49,24 +50,121 @@ export default class Album {
 
     fetch() {
 
-        this.apiConnector.fetchAlbum(album);
+        this.apiConnector.fetchAlbum(this);
         return this;
     }
 
+    /**
+     * Creates this Album on the server, using the existing information.
+     */
+    create() {
+
+        this.apiConnector.createAlbum(this);
+        return this;
+    }
+
+    /**
+     * Applies the new props to this Album, and syncs them with the server.
+     */
     update(props) {
 
-        this.apiConnector.updateAlbum(album);
+        let hasChanges = false;
+        if (props.name && props.name !== this.name) {
+            this.name = props.name;
+            hasChanges = true;
+        }
+
+        if (!hasChanges)
+            return this;
+
+        this.apiConnector.updateAlbum(this);
         return this;
     }
 
     delete() {
 
-        this.apiConnector.deleteAlbum(album);
+        this.apiConnector.deleteAlbum(this);
         return this;
     }
 
 
-    handleDeleteSuccess() {
+    uploadPhoto(props) {
 
+        let { fileContent } = props;
+
+        let photo = new Photo({
+
+            id: uuid(),
+            parentAlbum: this,
+            syncState: 'new',
+
+            name: fileContent.name,
+            createdDate: moment(),
+            modifiedDate: moment(),
+            size: fileContent.size,
+            width: 0,
+            height: 0,
+
+            fileContent: props.fileContent
+        });
+
+        this._photos.set(photo.id, photo);
+
+        // sync with the server
+        photo.upload();
+        return this;
     }
+
+    applyApiProps(data) {
+
+        if (data.id !== this.id) {
+
+            this.previousId = this.id;
+            this.id = data.id;
+            this.parentStore.handleAlbumRemapped(this);
+        }
+
+        Object.assign(this, data);
+
+        this.syncState = 'synced';
+
+        return this;
+    }
+
+    injectApiPhotos(apiPhotos) {
+
+        apiPhotos.forEach(apiPhoto => {
+
+            let photo = new Photo({
+                id: apiPhoto.id,
+                parentAlbum: this,
+                syncState: 'partiallySynced',
+
+                name: apiPhoto.name,
+                createdDate: moment(apiPhoto.createdAt),
+                modifiedDate: moment(apiPhoto.timestamp),
+                url: apiPhoto.url
+            });
+
+            this._photos.set(photo.id, photo);
+        });
+    }
+
+    handleDeleted = () => {
+
+        this.syncState = 'deleted';
+        this.parentStore.handleAlbumDeleted(this);
+    }
+
+    handlePhotoRemapped(photo) {
+
+        this._photos.delete(photo.previousId);
+        this._photos.set(photo.id, photo);
+    }
+
+    handlePhotoDeleted(photo) {
+
+        this._photos.delete(photo.id);
+    }
+
 }

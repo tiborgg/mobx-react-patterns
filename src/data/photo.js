@@ -1,12 +1,12 @@
 'use strict';
 
 import { observable, extendObservable, action } from 'mobx';
+import _ from 'lodash';
+import moment from 'moment';
 
 export default class Photo {
 
-    constructor(props, apiConnector) {
-
-        this.apiConnector = apiConnector;
+    constructor(props) {
 
         extendObservable(this, {
 
@@ -29,12 +29,17 @@ export default class Photo {
             uploadProgressSize: 0,
 
             get uploadProgress() {
-                
+
             }
         });
+
+        this.apiConnector = this.parentAlbum.apiConnector;
     }
 
     fetch() {
+
+        if (this.syncState === 'synced')
+            return this;
 
         this.apiConnector.fetchPhoto(this);
         return this;
@@ -46,9 +51,53 @@ export default class Photo {
         return this;
     }
 
+    update(props) {
+
+        let hasChanges = false;
+        if (props.name && props.name !== this.name) {
+            this.name = props.name;
+            hasChanges = true;
+        }
+
+        if (!hasChanges)
+            return this;
+
+        this.apiConnector.updatePhoto(this);
+        return this;
+    }
+
     delete() {
 
         this.apiConnector.deletePhoto(this);
         return this;
     }
+
+    applyApiProps(apiProps) {
+
+        if (apiProps.id !== this.id) {
+
+            this.previousId = this.id;
+            this.id = apiProps.id;
+            this.parentAlbum.handlePhotoRemapped(this);
+        }
+
+        Object.assign(this, {
+
+            name: apiProps.name,
+            createdDate: moment(apiProps.createdAt),
+            modifiedDate: moment(apiProps.timestamp),
+            url: apiProps.url,
+            size: apiProps.size,
+            width: 0,
+            height: 0
+        });
+
+        this.syncState = 'synced';
+
+        return this;
+    }
+
+    handleDeleted = () =>
+        this.parentAlbum.handlePhotoDeleted(this);
+
 }
