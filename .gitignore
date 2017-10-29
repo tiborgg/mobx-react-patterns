@@ -46,3 +46,5 @@ build
 dist
 
 _references.js
+
+server/node_modules
