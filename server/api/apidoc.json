@@ -1,0 +1,9 @@
+{
+    "name": "ALBUM-SERVER",
+    "version": "0.1.0",
+    "description": "",
+    "title": "ALBUM-SERVER",
+    "template": {
+        "forceLanguage": "en"
+    }
+}
