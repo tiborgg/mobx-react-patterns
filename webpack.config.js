@@ -21,10 +21,31 @@ module.exports = {
         extensions: ['.js', '.jsx']
     },
     module: {
-        rules: [{
-            test: /\.jsx?$/,
-            use: ['babel-loader'],
-            include: path.join(__dirname, 'src')
-        }]
+        rules: [
+            {
+                test: /\.jsx?$/,
+                include: path.resolve('./src/'),
+
+                use: ['babel-loader']
+            },
+
+            {
+                test: /\.less$/,
+                include: path.resolve('./src/'),
+
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader', options: { sourceMap: true } },
+                    { loader: 'less-loader', options: { sourceMap: true } }]
+            },
+
+            {
+                test: /\.css$/,
+                include: path.resolve('./src/'),
+
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: "css-loader", options: { sourceMap: true } }]
+            }]
     }
 };
