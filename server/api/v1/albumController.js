@@ -103,7 +103,14 @@ router.get('/:id', (req, res, next) => {
     }
 
     pictures.forEach(x => {
-        o.pictures.push(Object.assign({ url: `${config.siteUrl}/uploads/${id}/${x.id}.${x.ext}` }, x));
+        let y = Object.assign({ url: `${config.siteUrl}/uploads/${id}/${x.id}.${x.ext}` }, x);
+        y.size = undefined;
+        y.width = undefined;
+        y.height = undefined;
+        y.timestamp = undefined;
+        y.createdAt = undefined;
+        y.ext = undefined;
+        o.pictures.push(y);
     });
 
     return res.status(200).json(o);
@@ -222,7 +229,7 @@ router.post('/:id/picture', validateFile, validator(joi.object().keys({
     }).then(() => {
         let size = sizeOf(`${config.rootFolder}/uploads/${id}/${newPicture.id}.${extension}`);
         db.get('pictures').getById(newPicture.id)
-            .assign({ size: size }).write();
+            .assign({ width: size.width, height: size.height, size: file.data.length }).write();
 
         return res.status(200).json(Object.assign(
             { url: `${config.siteUrl}/uploads/${id}/${newPicture.id}.${newPicture.ext}` },
