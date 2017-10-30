@@ -39,8 +39,12 @@ export default class AlbumCard
 
                 <header className="album-header" onClick={this.handleHeaderClick}>
 
-                    <div className="album-cover">
+                    <div className="album-arrow">
+                        <span className="fa fa-chevron-down"/>
+                    </div>
 
+                    <div className="album-cover">
+                        <div className="album-cover-image" style={{ backgroundImage: `url(${model.coverUrl})` }} />
                     </div>
 
                     <div className="album-info">
@@ -48,6 +52,7 @@ export default class AlbumCard
 
                             <input className="album-name-input"
                                 type="text"
+                                spellCheck={false}
                                 placeholder="Enter album name"
                                 value={this.isNameInputFocused ? this.nameInputValue : model.name}
                                 onChange={this.handleNameInputChange}
@@ -56,19 +61,27 @@ export default class AlbumCard
                         </h2>
 
                         <h4 className="album-details">
-                            <span className="album-photo-count">{model.photos.length} photos</span>
+                            <span className="value">{model.photos.length} photos</span>
                             <span className="separator"> / </span>
-                            <span className="album-created-date">Created {model.createdDate.fromNow()}</span>
+                            <span className="label">Created </span>
+                            <span className="value">{model.createdDate.fromNow()}</span>
                             <span className="separator"> / </span>
-                            <span className="album-modified-date">Modified {model.modifiedDate.fromNow()}</span>
+                            <span className="label">Modified </span>
+                            <span className="value">{model.modifiedDate.fromNow()}</span>
                         </h4>
                     </div>
 
                     <div className="album-actions">
 
+                        <div className="upload-photo-button album-action-button" role="button">
+                            <span className="icon fa fa-upload" />
+                            <input type="file" multiple={true} onChange={this.handleUploadInputChange} />
+                        </div>
+
                         <button className="delete-album-button album-action-button" onClick={this.handleDeleteButtonClick}>
                             <span className="icon fa fa-trash" />
                         </button>
+
                     </div>
                 </header>
 
@@ -95,6 +108,8 @@ export default class AlbumCard
 
     @action
     handleUploadInputChange = (evt) => {
+
+        evt.stopPropagation();
 
         const { props } = this;
         let { model } = props;
@@ -125,7 +140,8 @@ export default class AlbumCard
         this.nameInputValue = evt.target.value;
 
     @action
-    handleNameInputFocus = () => {
+    handleNameInputFocus = evt => {
+        
         this.isNameInputFocused = true;
         this.nameInputValue = this.props.model.name || '';
     }

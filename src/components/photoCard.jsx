@@ -31,47 +31,69 @@ export default class PhotoCard
         const { props } = this;
         let { model } = props;
 
+        let className = 'photo-card ' + model.syncState;
+
         return (
-            <div className="photo-card" 
-                onMouseEnter={this.handleMouseEnter} 
+            <div className={className}
+                onMouseEnter={this.handleMouseEnter}
                 onMouseLeave={this.handleMouseLeave}>
 
-                <div className="photo-thumb" style={{ backgroundImage: `url(${model.url})` }}></div>
+                <div className="photo-thumb" style={{ backgroundImage: `url(${model.url})` }}>
+
+                    <div className="photo-overlay">
+
+                        <button className="photo-delete-button" onClick={this.handleDeleteButtonClick}>
+                            <span className="icon fa fa-trash" />
+                        </button>
+
+                        <div className="photo-info">
+                            <div className="photo-info-name">{model.name}</div>
+
+                            <div className="photo-details">
+                                <span className="value">{model.displaySize}</span>
+                                <span className="separator"> / </span>
+                                <span className="value">{model.width} x {model.height}</span>
+                            </div>
+                            <div className="photo-created-date">Created <span className="value">{model.createdDate.fromNow()}</span></div>
+                        </div>
+                    </div>
+
+                    <div className="photo-upload-overlay">
+
+                        <div className="upload-progress">
+                            <div className="upload-progress-bar" style={{ width: (model.uploadProgress * 100) + '%' }}></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="photo-name">
 
                     <textarea className="photo-name-input"
                         placeholder="Enter photo name"
+                        spellCheck={false}
                         value={this.isNameInputFocused ? this.nameInputValue : model.name}
                         onChange={this.handleNameInputChange}
                         onFocus={this.handleNameInputFocus}
                         onBlur={this.handleNameInputBlur} />
                 </div>
-
-                <div className="photo-overlay">
-                    <button className="photo-delete-button" onClick={this.handleDeleteButtonClick}>
-                        <span className="icon fa fa-trash" />
-                    </button>
-
-                    <div className="photo-info">
-
-                    </div>
-                </div>
-
-                {(model.syncState === 'uploading') ? (
-                    <div>upload progress: {model.uploadProgressSize}</div>
-                ) : null}
             </div>
         );
     }
 
-    handleMouseEnter = evt => {}
-        //this.props.model.fetch();
-        
-    handleMouseLeave = evt => {}
+    handleMouseEnter = evt => {
 
-    handleDeleteButtonClick = () =>
-        this.props.model.delete();
+        let { model } = this.props;
+        if (model.syncState !== 'uploading' && model.syncState !== 'synced')
+            model.fetch();
+    }
+
+    handleMouseLeave = evt => { }
+
+    handleDeleteButtonClick = () => {
+
+        let { model } = this.props;
+        model.delete();
+    }
 
     @action
     handleNameInputChange = evt =>
@@ -93,7 +115,6 @@ export default class PhotoCard
 
         this.isNameInputFocused = false;
         this.nameInputValue = null;
-
     }
 
 }

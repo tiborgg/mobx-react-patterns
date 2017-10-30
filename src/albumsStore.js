@@ -65,7 +65,8 @@ export default class AlbumsStore {
 
                 name: apiAlbum.name,
                 createdDate: moment(apiAlbum.createdAt),
-                modifiedDate: moment(apiAlbum.timestamp)
+                modifiedDate: moment(apiAlbum.timestamp),
+                coverUrl: apiAlbum.coverUrl
             });
 
             this._albums.set(album.id, album);

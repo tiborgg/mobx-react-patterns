@@ -32,7 +32,7 @@ class App extends React.Component {
             <div className='app'>
 
                 <header>
-                    <h1>MobX / React photo albums</h1>
+                    <h1 className="app-title">MobX / React photo albums</h1>
                 </header>
 
                 <AlbumBrowser albumsStore={this.albumsStore} />

@@ -22,6 +22,8 @@ export default class Album {
             createdDate: props.createdDate,
             modifiedDate: props.modifiedDate,
 
+            coverUrl: props.coverUrl,
+
             _photos: observable.map(),
             get photos() {
 
@@ -105,7 +107,8 @@ export default class Album {
             width: 0,
             height: 0,
 
-            fileContent: props.fileContent
+            fileContent: props.fileContent,
+            url: URL.createObjectURL(props.fileContent)
         });
 
         this._photos.set(photo.id, photo);
