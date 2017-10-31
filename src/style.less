@@ -11,29 +11,11 @@ input[type="file"] { position:absolute; top:0; right:0; bottom:0; left:0; cursor
 .app { position:fixed; top:0; left:0; right:0; bottom:0; background:fade(#EAEDF2, 80%); overflow-y:auto; }
 .app-title { text-align:center; font-size:42px; font-weight:300; color:#6e757b; border-bottom:1px solid white; margin-top:0; margin-bottom:40px; line-height:100px; }
 
-.album-browser { position:relative; margin:20px 10%; }
+.photo-browser { position:relative; margin:20px auto; width:1200px; background:white; }
 
-.album-card { margin-bottom:10px; background:white; }
-.album-card[aria-expanded="false"] .photo-browser { display:none; }
-.album-header { padding:30px 0; margin:0 100px; display:flex; align-items:center; position:relative; border-bottom:1px dashed #b8d4c8; }
-.album-arrow { border:1px solid #d2e5ec; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#03A9F4; margin-right:20px; margin-left:-60px; }
-.album-cover { width:100px; height:100px; position:relative; overflow:hidden; margin-right:20px; }
-.album-cover-image { position:absolute; top:-10px; right:-10px; bottom:-10px; left:-10px; background-position:center; background-size:cover; }
-.album-info { position:relative; flex:1; }
-.album-actions { position:relative; }
-.album-name { margin:5px 0; }
-.album-name-input { font-size:36px; font-weight:300; color:#556067; border:none; border-bottom:1px solid transparent; outline:none; background:transparent; }
-.album-details { margin:5px 0; font-size:14px; font-weight:400; color:#9597a3; }
-.album-details .separator { color:#66676d; margin:0 7px; }
-.album-details .label { color: #66676d; }
-.album-details .value { color: #48da93; margin:0 2px; }
-
-.album-actions { display:flex; }
-.album-action-button { margin:0 3px; }
-.delete-album-button { width:70px; height:70px; border-radius:2px; border:1px solid #EEE; color:#EE754A; font-size:24px; }
 .upload-photo-button { width:70px; height:70px; border-radius:2px; background:#22A86D; color:white; font-size:24px; }
 
-.photo-browser { display:flex; align-items:flex-start; justify-content:flex-start; flex-wrap:wrap; padding:20px 90px; }
+.photo-list { display:flex; align-items:flex-start; justify-content:flex-start; flex-wrap:wrap; padding:40px; }
 
 .photo-card { margin:15px; cursor:pointer; position:relative; }
 .photo-thumb { width:250px; height:250px; background-position:center; background-size:cover; margin-bottom:10px; position:relative; transition:transform @transition-settings; }

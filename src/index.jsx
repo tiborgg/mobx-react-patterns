@@ -9,8 +9,8 @@ import { observer } from 'mobx-react';
 import DevTools from 'mobx-react-devtools';
 
 import ApiConnector from './api/apiConnector';
-import AlbumBrowser from './components/albumBrowser';
-import AlbumsStore from './albumsStore';
+import PhotoBrowser from './components/photoBrowser';
+import PhotosStore from './data/photosStore';
 
 @observer
 class App extends React.Component {
@@ -21,13 +21,14 @@ class App extends React.Component {
         this.apiConnector = new ApiConnector();
 
         extendObservable(this, {
-            albumsStore: new AlbumsStore(this.apiConnector)
+            photosStore: new PhotosStore(this.apiConnector)
         });
 
-        this.albumsStore.fetchAlbums();
+        this.photosStore.fetchPhotos();
     }
 
     render() {
+
         return (
             <div className='app'>
 
@@ -35,7 +36,7 @@ class App extends React.Component {
                     <h1 className="app-title">MobX / React photo albums</h1>
                 </header>
 
-                <AlbumBrowser albumsStore={this.albumsStore} />
+                <PhotoBrowser store={this.photosStore} />
 
                 <footer>
 
@@ -49,3 +50,63 @@ ReactDOM.render(
     <App />,
     document.getElementById('root')
 );
+
+
+
+
+
+
+
+// import * as React from 'react';
+// import { render } from 'react-dom';
+// import { observable } from 'mobx';
+// import { observer } from 'mobx-react';
+
+// window.WhyMobX = observable({
+//     because: "It's awesome"
+// });
+
+// @observer
+// class WhyMobX extends React.Component {
+
+//     render() {
+
+//         return <div>{WhyMobX.because}</div>
+//     }
+// }
+
+// render(<WhyMobX />, document.getElementById('whatever'));
+
+// setTimeout(() => {
+//     WhyMobX.because = 'This is how you update your UI like a boss';
+// }, 1000);
+
+// @observer
+// class MobxState extends React.Component {
+
+//     constructor() {
+//         super();
+
+//         extendObservable(this, {
+//             counter: 0
+//         });
+//     }
+
+//     render() {
+
+//         return (
+//             <div>
+//                 <div>{this.counter}</div>
+//                 <button onClick={this.handleIncrement}>increment</button>
+//             </div>
+//         );
+//     }
+
+//     handleIncrement = () => {
+
+//         this.counter++;
+//     }
+// }
+
+
+// ReactDOM.render(<MobxState />, document.getElementById('root'));

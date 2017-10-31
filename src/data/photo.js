@@ -1,7 +1,6 @@
 'use strict';
 
 import { observable, extendObservable, action } from 'mobx';
-import _ from 'lodash';
 import moment from 'moment';
 
 import getDisplaySize from '../util/getDisplaySize';
@@ -23,8 +22,8 @@ export default class Photo {
             modifiedDate: props.modifiedDate,
             width: props.width || 0,
             height: props.height || 0,
-            size: props.size || 0,
 
+            fileSize: props.fileSize || 0,
             fileContent: props.fileContent,
 
             syncState: 'new',
@@ -32,10 +31,10 @@ export default class Photo {
 
             get uploadProgress() {
                 
-                return this.uploadProgressSize / this.size;
+                return this.uploadProgressSize / this.fileSize;
             },
 
-            get displaySize() { return getDisplaySize(this.size); }
+            get displaySize() { return getDisplaySize(this.fileSize); }
         });
 
         this.apiConnector = this.parentAlbum.apiConnector;
@@ -92,7 +91,7 @@ export default class Photo {
             createdDate: moment(apiProps.createdAt),
             modifiedDate: moment(apiProps.timestamp),
             url: apiProps.url,
-            size: apiProps.size,
+            fileSize: apiProps.size,
             width: apiProps.width,
             height: apiProps.height
         });

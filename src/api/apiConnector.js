@@ -4,10 +4,6 @@ import { observable, extendObservable, action } from 'mobx';
 
 export default class ApiConnector {
 
-    constructor() {
-
-    }
-
     _request(method, endpoint, callback, data) {
 
         let xhr = new XMLHttpRequest();
@@ -64,79 +60,19 @@ export default class ApiConnector {
         return xhr;
     }
 
-    _get = (url, callback) => this._request('GET', url, callback);
-    _post = (url, callback, data) => this._request('POST', url, callback, data);
-    _put = (url, callback, data) => this._request('PUT', url, callback, data);
-    _delete = (url, callback) => this._request('DELETE', url, callback);
+    fetchPhotos(photosStore) {
 
-    fetchAlbums(albumsStore) {
-
-        return this._get('/album', (err, data) => {
+        return this._request('GET', '/picture/', (err, data) => {
 
             if (err) return;
-            albumsStore.injectApiAlbums(data);
+            photosStore.injectApiPhotos(data);
         });
     }
-
-    @action
-    fetchAlbum(album) {
-
-        album.syncState = 'fetching';
-        return this._get(`/album/${album.id}`, (err, data) => {
-
-            if (err) return;
-            
-            album.applyApiProps(data);
-            album.injectApiPhotos(data.pictures);
-        });
-    }
-
-    @action
-    createAlbum(album) {
-
-        let data = {
-            name: album.name
-        };
-
-        album.syncState = 'creating';
-        return this._post(`/album`, (err, data) => {
-
-            if (err) return;
-            album.applyApiProps(data);
-        }, data);
-    }
-
-    @action
-    updateAlbum(album) {
-
-        let data = {
-            name: album.name
-        };
-
-        album.syncState = 'updating';
-        return this._put(`/album/${album.id}`, (err, data) => {
-
-            if (err) return;
-            album.applyApiProps(data);
-        }, data);
-    }
-
-    deleteAlbum(album) {
-
-        album.syncState = 'deleting';
-        return this._delete(`/album/${album.id}`, (err, data) => {
-
-            if (err) return;
-            album.handleDeleted();
-        });
-    }
-
 
     fetchPhoto(photo) {
 
-        
         photo.syncState = 'fetching';
-        return this._get(`/picture/${photo.id}`, (err, data) => {
+        return this._request('GET', `/picture/${photo.id}`, (err, data) => {
 
             if (err) return;
             photo.applyApiProps(data);
@@ -150,7 +86,7 @@ export default class ApiConnector {
         };
 
         photo.syncState = 'updating';
-        return this._put(`/picture/${photo.id}`, (err, data) => {
+        return this._request('PUT', `/picture/${photo.id}`, (err, data) => {
 
             if (err) return;
             photo.applyApiProps(data);
@@ -160,7 +96,7 @@ export default class ApiConnector {
     deletePhoto(photo) {
 
         photo.syncState = 'deleting';
-        return this._delete(`/picture/${photo.id}`, (err, data) => {
+        return this._request('DELETE', `/picture/${photo.id}`, (err, data) => {
 
             if (err) return;
             photo.handleDeleted();
@@ -170,7 +106,7 @@ export default class ApiConnector {
     uploadPhoto(photo) {
 
         let xhr = new XMLHttpRequest();
-        let url = `http://localhost:3000/api/album/${photo.parentAlbum.id}/picture`;
+        let url = `http://localhost:3000/api/album/8d63baa8-4c35-4fca-9854-a218b6d8c3b0/picture`;
 
         let formData = new FormData();
 
