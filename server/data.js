@@ -7,7 +7,6 @@ const db = low(adapter);
 db._.mixin(lodashId);
 
 db.defaults({
-    albums: [],
     pictures: []
 }).write();
 

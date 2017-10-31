@@ -12,6 +12,23 @@ const sizeOf = require('image-size');
 const db = require('../../data.js');
 const moment = require('moment');
 
+const validateFile = (req, res, next) => {
+    if (!(req.files && req.files.pic))
+        return res.status(400).json(errorWriter('no file'));
+
+    return next();
+};
+const writeFile = (path, data) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path, data, (err, res) => {
+            if (err)
+                return reject(err);
+
+            return resolve(res);
+        });
+    });
+};
+
 /**
  * @api {get} /api/picture Get All
  * @apiDescription Get all Pictures.
@@ -26,7 +43,11 @@ router.get('/', (req, res, next) => {
 
     let o = [];
     items.forEach(x => {
-        o.push(Object.assign({ url: `${config.siteUrl}/uploads/${x.albumId}/${x.id}.${x.ext}` }, x));
+        o.push({
+            id: x.id,
+            name: x.name,
+            url: `${config.siteUrl}/uploads/${x.id}.${x.ext}`
+        });
     });
 
     return res.status(200).json(o);
@@ -48,9 +69,7 @@ router.get('/:id', (req, res, next) => {
     if (!item.value())
         return res.status(404).json({ message: 'not found' });
 
-    let album = db.get('albums').getById(item.value().albumId).value();
-
-    let o = Object.assign({ url: `${config.siteUrl}/uploads/${item.value().albumId}/${item.value().id}.${item.value().ext}` }, item.value(), { album: Object.assign({}, album) });
+    let o = Object.assign({ url: `${config.siteUrl}/uploads/${item.value().id}.${item.value().ext}` }, item.value());
     return res.status(200).json(o);
 });
 
@@ -82,7 +101,7 @@ router.put('/:id', validator(joi.object().keys({
             timestamp: now
         }).write();
 
-    return res.status(200).json(Object.assign({ url: `${config.siteUrl}/uploads/${item.value().albumId}/${item.value().id}.${item.value().ext}` }, item.value()));
+    return res.status(200).json(Object.assign({ url: `${config.siteUrl}/uploads/${item.value().id}.${item.value().ext}` }, item.value()));
 });
 
 /**
@@ -102,13 +121,61 @@ router.delete('/:id', (req, res, next) => {
         return res.status(404).json({ message: 'not found' });
 
     const p = new Promise((resolve, reject) => {
-        fs.unlink(`${config.rootFolder}/uploads/${item.value().albumId}/${item.value().id}.${item.value().ext}`, () => {
+        fs.unlink(`${config.rootFolder}/uploads/${item.value().id}.${item.value().ext}`, () => {
             return resolve();
         });
     }).then(() => {
         db.get('pictures').remove({ id: id }).write();
         return res.status(200).json({ removed: true, id: id });
     });
+});
+
+/**
+ * @api {post} /api/picture New
+ * @apiDescription New Picture.
+ * @apiVersion 0.1.0
+ * @apiName PostPicture
+ * @apiGroup Picture
+ * 
+ * @apiParam {string} name
+ * 
+ * @apiSampleRequest /api/picture
+ */
+router.post('/', validateFile, validator(joi.object().keys({
+    name: joi.string().required()
+})), (req, res, next) => {
+    const file = req.files.pic;
+    let extension = file.name.split('.').pop();
+
+    const model = res.locals.model;
+    const now = moment().toISOString();
+
+    let newPicture = {
+        name: model.name,
+        ext: extension,
+        createdAt: now,
+        timestamp: now
+    };
+
+    db.get('pictures')
+        .insert(newPicture).write();
+
+    new Promise((resolve, reject) => {
+        file.mv(`${config.rootFolder}/uploads/${newPicture.id}.${extension}`, (err) => {
+            if (err)
+                return reject(err);
+            return resolve();
+        });
+    }).then(() => {
+        let size = sizeOf(`${config.rootFolder}/uploads/${newPicture.id}.${extension}`);
+        db.get('pictures').getById(newPicture.id)
+            .assign({ width: size.width, height: size.height, size: file.data.length }).write();
+
+        return res.status(200).json(Object.assign(
+            { url: `${config.siteUrl}/uploads/${newPicture.id}.${newPicture.ext}` },
+            newPicture)
+        );
+    }).catch(httpCatch(res, next));
 });
 
 module.exports = router;
