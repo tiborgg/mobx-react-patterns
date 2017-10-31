@@ -64,15 +64,17 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "file",
+            "optional": false,
+            "field": "pic",
+            "description": ""
           }
         ]
       }
     },
-    "sampleRequest": [
-      {
-        "url": "/api/picture"
-      }
-    ],
     "filename": "api/v1/pictureController.js",
     "groupTitle": "Picture"
   },

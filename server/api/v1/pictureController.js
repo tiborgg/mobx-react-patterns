@@ -138,8 +138,8 @@ router.delete('/:id', (req, res, next) => {
  * @apiGroup Picture
  * 
  * @apiParam {string} name
+ * @apiParam {file} pic
  * 
- * @apiSampleRequest /api/picture
  */
 router.post('/', validateFile, validator(joi.object().keys({
     name: joi.string().required()
