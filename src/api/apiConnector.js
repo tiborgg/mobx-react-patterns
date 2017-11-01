@@ -106,7 +106,7 @@ export default class ApiConnector {
     uploadPhoto(photo) {
 
         let xhr = new XMLHttpRequest();
-        let url = `http://localhost:3000/api/album/8d63baa8-4c35-4fca-9854-a218b6d8c3b0/picture`;
+        let url = `http://localhost:3000/api/picture`;
 
         let formData = new FormData();
 

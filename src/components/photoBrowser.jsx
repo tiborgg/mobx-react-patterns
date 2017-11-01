@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import PhotosStore from '../data/photosStore';
 import PhotoCard from './photoCard';
+import Stats from './stats';
 
 @observer
 export default class PhotoBrowser
@@ -37,12 +38,14 @@ export default class PhotoBrowser
 
                     <li className="photo-item photo-upload-item" key="$uploadItem">
 
-                        <div className="upload-photo-button" role="button">
+                        <div className="photo-upload-button" role="button">
                             <span className="icon fa fa-upload" />
                             <input type="file" multiple={true} onChange={this.handleUploadInputChange} />
                         </div>
                     </li>
                 </ul>
+
+                <Stats store={store} />
             </div>
         );
     }

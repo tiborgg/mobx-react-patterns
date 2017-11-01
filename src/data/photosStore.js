@@ -2,7 +2,6 @@
 
 import { observable, extendObservable, action } from 'mobx';
 import { v4 as uuid } from 'uuid';
-import moment from 'moment';
 
 import Photo from './photo';
 
@@ -22,6 +21,15 @@ export default class PhotosStore {
 
                 return this.photos.filter(photo => photo.syncState === 'uploading');
             },
+
+            // some props might not make sense because they are so closely related to another prop
+            // but they might make sense from a code readability perspective, and that's one of the
+            // concepts that MobX encourages 
+            get hasUploadingPhotos() {
+
+                return this.uploadingPhotos.length > 0;
+            },
+
             get totalUploadProgressSize() {
                 return this.uploadingPhotos.reduce((sum, photo) => sum + photo.uploadProgressSize, 0);
             },
@@ -32,7 +40,7 @@ export default class PhotosStore {
                 return this.totalUploadProgressSize / this.totalUploadFileSize;
             },
 
-            
+
             get totalAverageUploadSpeed() {
 
             },
@@ -61,8 +69,8 @@ export default class PhotosStore {
             syncState: 'new',
 
             name: fileContent.name,
-            createdDate: moment(),
-            modifiedDate: moment(),
+            createdDate: new Date(),
+            modifiedDate: new Date(),
             size: fileContent.size,
             width: 0,
             height: 0,
@@ -88,8 +96,8 @@ export default class PhotosStore {
                 syncState: 'partiallySynced',
 
                 name: apiPhoto.name,
-                createdDate: moment(apiPhoto.createdAt),
-                modifiedDate: moment(apiPhoto.timestamp),
+                createdDate: new Date(apiPhoto.createdAt),
+                modifiedDate: new Date(apiPhoto.timestamp),
                 url: apiPhoto.url
             });
 

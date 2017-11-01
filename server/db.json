@@ -1,3 +1,44 @@
 {
-  "pictures": []
+  "pictures": [
+    {
+      "name": "download.jpg",
+      "ext": "jpg",
+      "createdAt": "2017-10-31T23:20:26.402Z",
+      "timestamp": "2017-10-31T23:20:26.402Z",
+      "id": "4a3c99fa-aaa9-4f16-a681-d1634077d2e1",
+      "width": 1000,
+      "height": 1000,
+      "size": 851559
+    },
+    {
+      "name": "test 123",
+      "ext": "jpg",
+      "createdAt": "2017-10-31T23:20:29.259Z",
+      "timestamp": "2017-10-31T23:21:05.940Z",
+      "id": "c7e61ddf-7ea1-4e85-950b-70a339305535",
+      "width": 2800,
+      "height": 900,
+      "size": 437163
+    },
+    {
+      "name": "led-zep-iv.jpg",
+      "ext": "jpg",
+      "createdAt": "2017-10-31T23:21:15.061Z",
+      "timestamp": "2017-10-31T23:21:15.061Z",
+      "id": "f5ac4d67-a915-4275-95e2-943e1c2154cb",
+      "width": 1417,
+      "height": 1417,
+      "size": 276558
+    },
+    {
+      "name": "JimiHendrix_BandOfGypsys_G0100018888263_F_001_72dpi.jpeg",
+      "ext": "jpeg",
+      "createdAt": "2017-11-01T00:33:58.679Z",
+      "timestamp": "2017-11-01T00:33:58.679Z",
+      "id": "ef3d64c0-c80e-4ec6-aa01-747bd24a909d",
+      "width": 1500,
+      "height": 1500,
+      "size": 1718521
+    }
+  ]
 }

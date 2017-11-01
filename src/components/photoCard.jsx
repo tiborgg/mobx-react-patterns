@@ -4,7 +4,6 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { observable, extendObservable, action } from 'mobx';
 import { observer } from 'mobx-react';
-import _ from 'lodash';
 
 import Photo from '../data/photo';
 
@@ -54,7 +53,7 @@ export default class PhotoCard
                                 <span className="separator"> / </span>
                                 <span className="value">{model.width} x {model.height}</span>
                             </div>
-                            <div className="photo-created-date">Created <span className="value">{model.createdDate.fromNow()}</span></div>
+                            <div className="photo-created-date">Created <span className="value">{model.createdDate.toDateString()}</span></div>
                         </div>
                     </div>
 

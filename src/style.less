@@ -13,7 +13,8 @@ input[type="file"] { position:absolute; top:0; right:0; bottom:0; left:0; cursor
 
 .photo-browser { position:relative; margin:20px auto; width:1200px; background:white; }
 
-.upload-photo-button { width:70px; height:70px; border-radius:2px; background:#22A86D; color:white; font-size:24px; }
+.photo-upload-button { width:250px; height:250px; margin:15px; border-radius:2px; background:#f7f7f7; color:#b8c8d6; font-size:48px; }
+.photo-upload-button:hover { color:#22A86D; }
 
 .photo-list { display:flex; align-items:flex-start; justify-content:flex-start; flex-wrap:wrap; padding:40px; }
 
@@ -51,7 +52,8 @@ input[type="file"] { position:absolute; top:0; right:0; bottom:0; left:0; cursor
     .photo-upload-overlay { opacity: 1; visibility:visible; }
 }
 
-
+.stats { position:fixed; bottom:0; left:50%; margin-left:-170px; background:#2F2F31; width:300px; padding:15px 20px; display:flex; align-items:center; transition:transform @transition-settings, opacity @transition-settings; }
+.stats[aria-hidden="true"] { transform:translate3d(0,20px,0); opacity:0; visibility:hidden; }
  
 @keyframes pulse {
     0% { background:rgba(0,0,0,.6); }

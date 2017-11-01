@@ -1,7 +1,6 @@
 'use strict';
 
 import { observable, extendObservable, action } from 'mobx';
-import moment from 'moment';
 
 import getDisplaySize from '../util/getDisplaySize';
 
@@ -88,8 +87,8 @@ export default class Photo {
         Object.assign(this, {
 
             name: apiProps.name,
-            createdDate: moment(apiProps.createdAt),
-            modifiedDate: moment(apiProps.timestamp),
+            createdDate: new Date(apiProps.createdAt),
+            modifiedDate: new Date(apiProps.timestamp),
             url: apiProps.url,
             fileSize: apiProps.size,
             width: apiProps.width,
