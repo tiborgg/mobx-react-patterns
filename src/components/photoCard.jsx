@@ -37,7 +37,9 @@ export default class PhotoCard
                 onMouseEnter={this.handleMouseEnter}
                 onMouseLeave={this.handleMouseLeave}>
 
-                <div className="photo-thumb" style={{ backgroundImage: `url(${model.url})` }}>
+                <div className="photo-thumb"
+                    style={{ backgroundImage: `url(${model.url})` }}
+                    onClick={this.handleClick}>
 
                     <div className="photo-overlay">
 
@@ -55,6 +57,8 @@ export default class PhotoCard
                             </div>
                             <div className="photo-created-date">Created <span className="value">{model.createdDate.toDateString()}</span></div>
                         </div>
+
+                        <span className="progress-icon fa fa-circle-o-notch fa-spin fa-3x fa-fw" />
                     </div>
 
                     <div className="photo-upload-overlay">
@@ -82,16 +86,18 @@ export default class PhotoCard
     handleMouseEnter = evt => {
 
         let { model } = this.props;
-        if (model.syncState !== 'uploading' && model.syncState !== 'synced')
+        if (model.syncState !== 'uploading' &&
+            model.syncState !== 'synced')
             model.fetch();
     }
 
-    handleMouseLeave = evt => { }
+    handleClick = evt =>
+        window.open(this.props.model.url, '_blank');
 
-    handleDeleteButtonClick = () => {
+    handleDeleteButtonClick = evt => {
 
-        let { model } = this.props;
-        model.delete();
+        evt.stopPropagation();
+        this.props.model.delete();
     }
 
     @action

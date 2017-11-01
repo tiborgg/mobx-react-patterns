@@ -11,12 +11,10 @@ export default class Photo {
         extendObservable(this, {
 
             id: props.id,
+            parentStore: props.parentStore,
+
             name: props.name,
-
-            parentAlbum: props.parentAlbum,
-
             url: props.url,
-
             createdDate: props.createdDate,
             modifiedDate: props.modifiedDate,
             width: props.width || 0,
@@ -36,9 +34,10 @@ export default class Photo {
             get displaySize() { return getDisplaySize(this.fileSize); }
         });
 
-        this.apiConnector = this.parentAlbum.apiConnector;
+        this.apiConnector = this.parentStore.apiConnector;
     }
 
+    @action
     fetch() {
 
         if (this.syncState === 'synced')
@@ -48,12 +47,14 @@ export default class Photo {
         return this;
     }
 
+    @action
     upload() {
 
         this.apiConnector.uploadPhoto(this);
         return this;
     }
 
+    @action
     update(props) {
 
         let hasChanges = false;
@@ -69,19 +70,21 @@ export default class Photo {
         return this;
     }
 
+    @action
     delete() {
 
         this.apiConnector.deletePhoto(this);
         return this;
     }
 
+    @action
     applyApiProps(apiProps) {
 
         if (apiProps.id !== this.id) {
 
             this.previousId = this.id;
             this.id = apiProps.id;
-            this.parentAlbum.handlePhotoRemapped(this);
+            this.parentStore.handlePhotoRemapped(this);
         }
 
         Object.assign(this, {
@@ -101,6 +104,6 @@ export default class Photo {
     }
 
     handleDeleted = () =>
-        this.parentAlbum.handlePhotoDeleted(this);
+        this.parentStore.handlePhotoDeleted(this);
 
 }

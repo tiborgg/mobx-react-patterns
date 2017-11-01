@@ -150,3 +150,31 @@ class MobxState extends React.Component {
 
 
 ReactDOM.render(<MobxState />, document.getElementById('root'));
+
+
+class ReactState extends React.Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            counter: 0
+        };
+    }
+
+    render() {
+        return (
+            <div>
+                <button onClick={this.handleIncrement}>increment</button>
+            </div>
+        );
+    }
+
+    handleIncrement = () => {
+
+        
+    }
+}
+
+
+ReactDOM.render(<MobxState />, document.getElementById('root'));

@@ -74,8 +74,11 @@ export default class ApiConnector {
         photo.syncState = 'fetching';
         return this._request('GET', `/picture/${photo.id}`, (err, data) => {
 
-            if (err) return;
-            photo.applyApiProps(data);
+            setTimeout(() => {
+
+                if (err) return;
+                photo.applyApiProps(data);
+            }, 1000);
         });
     }
 

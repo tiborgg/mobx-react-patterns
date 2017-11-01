@@ -6,6 +6,7 @@ import { observable, extendObservable, action } from 'mobx';
 import { observer } from 'mobx-react';
 
 import PhotosStore from '../data/photosStore';
+import getDisplaySize from '../util/getDisplaySize';
 
 @observer
 export default class PhotoBrowser
@@ -20,6 +21,15 @@ export default class PhotoBrowser
 
         extendObservable(this, {
 
+            get queueUploadSpeed() {
+                return getDisplaySize(this.props.store.queueUploadSpeed);
+            },
+            get totalUploadProgressSize() {
+                return getDisplaySize(this.props.store.totalUploadProgressSize);
+            },
+            get totalUploadFileSize() {
+                return getDisplaySize(this.props.store.totalUploadFileSize);
+            }
         });
     }
 
@@ -30,8 +40,23 @@ export default class PhotoBrowser
 
         return (
             <div className="stats" aria-hidden={!store.hasUploadingPhotos}>
-                stats
 
+                <div className="stats-details">
+                    <div className="progress">
+                        <span className="completed-percentage">
+                            <em className="percentage">{(store.totalUploadProgress * 100).toFixed(2)}%</em> 
+                            ({this.totalUploadProgressSize} / {this.totalUploadFileSize})
+                        </span>
+                    </div>
+                    <div className="speed">
+                        Speed:
+                        <em>{this.queueUploadSpeed} / s</em>
+                    </div>
+                </div>
+
+                <div className="upload-progress">
+                    <div className="upload-progress-bar" style={{ width: (store.totalUploadProgress * 100) + '%' }}></div>
+                </div>
             </div>
         );
     }

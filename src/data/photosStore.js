@@ -37,27 +37,34 @@ export default class PhotosStore {
                 return this.uploadingPhotos.reduce((sum, photo) => sum + photo.fileSize, 0);
             },
             get totalUploadProgress() {
+                // always check for division by zero!
+                if (this.totalUploadFileSize === 0)
+                    return 0;
+
                 return this.totalUploadProgressSize / this.totalUploadFileSize;
             },
 
+            queueStartTime: null,
+            get queueUploadSpeed() {
 
-            get totalAverageUploadSpeed() {
+                if (!this.hasUploadingPhotos)
+                    return 0;
 
-            },
-            get currentUploadSpeec() {
-
+                return this.totalUploadProgressSize / (new Date() - this.queueStartTime) * 1000;
             }
         });
 
         this.apiConnector = apiConnector;
     }
 
+    @action
     fetchPhotos() {
 
         this.apiConnector.fetchPhotos(this);
         return this;
     }
 
+    @action
     uploadPhoto(props) {
 
         let { fileContent } = props;
@@ -65,13 +72,13 @@ export default class PhotosStore {
         let photo = new Photo({
 
             id: uuid(),
-            parentAlbum: this,
+            parentStore: this,
             syncState: 'new',
 
             name: fileContent.name,
             createdDate: new Date(),
             modifiedDate: new Date(),
-            size: fileContent.size,
+            fileSize: fileContent.size,
             width: 0,
             height: 0,
 
@@ -81,18 +88,23 @@ export default class PhotosStore {
 
         this._photos.set(photo.id, photo);
 
+        // if there are no uploading photos in the queue, then mark the start of a new queue
+        this.queueStartTime = new Date();
+
         // sync with the server
         photo.upload();
         return this;
     }
 
+    @action
     injectApiPhotos(apiPhotos) {
 
         apiPhotos.forEach(apiPhoto => {
 
             let photo = new Photo({
+
                 id: apiPhoto.id,
-                parentAlbum: this,
+                parentStore: this,
                 syncState: 'partiallySynced',
 
                 name: apiPhoto.name,
@@ -105,12 +117,14 @@ export default class PhotosStore {
         });
     }
 
+    @action
     handlePhotoRemapped(photo) {
 
         this._photos.delete(photo.previousId);
         this._photos.set(photo.id, photo);
     }
 
+    @action
     handlePhotoDeleted(photo) {
 
         this._photos.delete(photo.id);

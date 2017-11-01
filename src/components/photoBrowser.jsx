@@ -4,7 +4,6 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { observable, extendObservable, action } from 'mobx';
 import { observer } from 'mobx-react';
-import _ from 'lodash';
 
 import PhotosStore from '../data/photosStore';
 import PhotoCard from './photoCard';
@@ -24,7 +23,7 @@ export default class PhotoBrowser
         let { store } = props;
 
         return (
-            <div className="photo-browser" aria-expanded={this.isExpanded}>
+            <div className="photo-browser">
 
                 <ul className="photo-list">
                     {store.photos.map(photo => {
@@ -54,16 +53,17 @@ export default class PhotoBrowser
     handleUploadInputChange = (evt) => {
 
         let { store } = this.props;
+        let { files } = evt.target;
 
-        _.forEach(evt.target.files, fileContent => {
+        for (let i = 0; i < files.length; i++) {
 
             // fileContent instanceof File
             // see https://developer.mozilla.org/en-US/docs/Web/API/File
 
             store.uploadPhoto({
-                fileContent
+                fileContent: files[i]
             });
-        });
+        }
     }
 
 }

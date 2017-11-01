@@ -19,25 +19,33 @@ input[type="file"] { position:absolute; top:0; right:0; bottom:0; left:0; cursor
 .photo-list { display:flex; align-items:flex-start; justify-content:flex-start; flex-wrap:wrap; padding:40px; }
 
 .photo-card { margin:15px; cursor:pointer; position:relative; }
+.photo-card .progress-icon { opacity:0; visibility:hidden; position:absolute; top:50%; left:50%; width:30px; font-size:30px; text-align:center; display:block; margin-top:-15px; margin-left:-15px; color:#377557; transition:opacity @transition-settings, visibility @transition-settings; }
 .photo-thumb { width:250px; height:250px; background-position:center; background-size:cover; margin-bottom:10px; position:relative; transition:transform @transition-settings; }
 .photo-name { transition:opacity @transition-settings; }
 .photo-name-input { color:#556067; font-family:Roboto, sans-serif; font-size:16px; font-weight:400; width:100%; line-height:1.2; border:none; border-bottom:1px solid transparent; outline:none; resize: none; }
 .photo-name-input:focus { border-bottom-color:red; }
 
-.photo-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.8); opacity:0; visibility: hidden; transition:opacity @transition-settings; }
-.photo-info { position:absolute; bottom:0; left:0; right:0; padding:15px; font-size:16px; font-weight:300; color:white; }
+.photo-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.8); opacity:0; visibility: hidden; }
+.photo-info { position:absolute; bottom:0; left:0; right:0; padding:15px; font-size:16px; font-weight:300; color:white; transition:opacity @transition-settings, visibility @transition-settings; }
 .photo-info-name { word-break:break-all; margin-bottom:15px; }
 .photo-details { margin:5px 0; color:#66676d; font-size:13px; font-weight:400; }
 .photo-details .separator { color:#66676d; margin:0 7px; }
 .photo-details .label { color: #b8b8bd; }
 .photo-details .value { color: #48da93; }
 .photo-created-date { margin:5px 0; font-size:13px; color:#b8b8bd; font-weight:400; }
-.photo-delete-button { position:absolute; top:15px; right:15px; width:40px; height:40px; background:rgba(255,255,255,.05); color:white; }
+.photo-delete-button { position:absolute; top:15px; right:15px; width:40px; height:40px; background:rgba(255,255,255,.05); cursor:pointer; border-radius:3px; color:white; transition:background-color @transition-settings; }
+.photo-delete-button:hover { background:rgba(255, 0, 0, 0.50); }
+
+.upload-progress { height:10px; width:100%; background:black; border-radius:5px; position:relative; }
+.upload-progress-bar { position:absolute; top:0; left:0; bottom:0; border-radius:5px; background:#22A86D; transition:width @transition-settings; }
 
 .photo-upload-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.8); padding:20px; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0; visibility:hidden; transition:transform @transition-settings, opacity @transition-settings; animation:pulse 1s ease-in-out infinite alternate; 
     .spin-icon { color: #22A86D; font-size:14px; }
-    .upload-progress { height:10px; width:100%; background:black; border-radius:5px; position:relative; }
-    .upload-progress-bar { position:absolute; top:0; left:0; bottom:0; border-radius:5px; background:#22A86D; transition:width @transition-settings; }
+}
+
+.photo-card.fetching {
+    .progress-icon { opacity:1; visibility:visible; }
+    .photo-info { opacity:0; visibility:hidden; }
 }
 
 .photo-card:not(.uploading) {
@@ -52,9 +60,11 @@ input[type="file"] { position:absolute; top:0; right:0; bottom:0; left:0; cursor
     .photo-upload-overlay { opacity: 1; visibility:visible; }
 }
 
-.stats { position:fixed; bottom:0; left:50%; margin-left:-170px; background:#2F2F31; width:300px; padding:15px 20px; display:flex; align-items:center; transition:transform @transition-settings, opacity @transition-settings; }
+.stats { position:fixed; bottom:15px; left:50%; margin-left:-320px; background:rgba(19, 19, 21, .9); border-radius:3px; width:600px; padding:15px 20px; transition:transform @transition-settings, opacity @transition-settings; }
 .stats[aria-hidden="true"] { transform:translate3d(0,20px,0); opacity:0; visibility:hidden; }
- 
+.stats-details { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; color:#a9abad; }
+.stats em { color:#48da93; font-weight:500; font-style:normal; margin:0 2px; }
+
 @keyframes pulse {
     0% { background:rgba(0,0,0,.6); }
     100% {  background:rgba(0,0,0,.8); }
